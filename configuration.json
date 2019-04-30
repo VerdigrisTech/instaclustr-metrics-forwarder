@@ -1,0 +1,3 @@
+{
+  "metrics_list":"n::cpuutilization,n::reads,n::writes,n::diskUtilization,n::nodeStatus,n::osload,n::compactions,n::clientRequestRead,n::clientRequestWrite"
+}
