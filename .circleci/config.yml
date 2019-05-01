@@ -13,6 +13,7 @@ workflows:
           create-repo: true
           dockerfile: Dockerfile
           repo: instaclustr-metrics-forwarder
+          tag: "${CIRCLE_SHA1}"
           filters:
             branches:
               only: master
