@@ -21,6 +21,7 @@ workflows:
 
       - aws-ecs/deploy-service-update:
           name: deploy-staging
+          context: aws-global
           requires:
             - aws-ecr/build_and_push_image
           cluster-name: "${AWS_RESOURCE_NAME_PREFIX}"
@@ -33,6 +34,7 @@ workflows:
 
       - aws-ecs/deploy-service-update:
           name: deploy-production
+          context: aws-global
           requires:
             - promote-to-production
           cluster-name: "${AWS_RESOURCE_NAME_PREFIX}"
