@@ -23,7 +23,7 @@ workflows:
           name: deploy-staging
           requires:
             - aws-ecr/build_and_push_image
-          cluster: "${AWS_RESOURCE_NAME_PREFIX}"
+          cluster-name: "${AWS_RESOURCE_NAME_PREFIX}"
           family: "${AWS_RESOURCE_NAME_PREFIX}-staging"
 
       - promote-to-production:
@@ -35,5 +35,5 @@ workflows:
           name: deploy-production
           requires:
             - promote-to-production
-          cluster: "${AWS_RESOURCE_NAME_PREFIX}"
+          cluster-name: "${AWS_RESOURCE_NAME_PREFIX}"
           family: "${AWS_RESOURCE_NAME_PREFIX}-production"
