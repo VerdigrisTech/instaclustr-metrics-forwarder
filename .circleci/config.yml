@@ -41,7 +41,7 @@ workflows:
           requires:
             - build-staging
           family: "${AWS_RESOURCE_NAME_PREFIX}-staging"
-          container-image-name-updates: "tag=staging-${CIRCLE_SHA1}"
+          container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-staging,tag=staging-${CIRCLE_SHA1}"
 
       - promote-to-production:
           type: approval
@@ -55,4 +55,4 @@ workflows:
           requires:
             - promote-to-production
           family: "${AWS_RESOURCE_NAME_PREFIX}-production"
-          container-image-name-updates: "tag=production-${CIRCLE_SHA1}"
+          container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-production,tag=production-${CIRCLE_SHA1}"
