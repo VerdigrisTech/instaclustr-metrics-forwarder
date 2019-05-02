@@ -16,6 +16,10 @@ build-defaults: &build-defaults
     branches:
       only: master
 
+deploy-defaults: &deploy-defaults
+  context: aws-global
+  cluster-name: "${AWS_RESOURCE_NAME_PREFIX}"
+
 workflows:
   build-and-deploy:
     jobs:
@@ -33,11 +37,11 @@ workflows:
 
       - aws-ecs/deploy-service-update:
           name: deploy-staging
-          context: aws-global
+          <<: *deploy-defaults
           requires:
             - build-staging
-          cluster-name: "${AWS_RESOURCE_NAME_PREFIX}"
           family: "${AWS_RESOURCE_NAME_PREFIX}-staging"
+          container-image-name-updates: "tag=staging-${CIRCLE_SHA1}"
 
       - promote-to-production:
           type: approval
@@ -47,8 +51,8 @@ workflows:
 
       - aws-ecs/deploy-service-update:
           name: deploy-production
-          context: aws-global
+          <<: *deploy-defaults
           requires:
             - promote-to-production
-          cluster-name: "${AWS_RESOURCE_NAME_PREFIX}"
           family: "${AWS_RESOURCE_NAME_PREFIX}-production"
+          container-image-name-updates: "tag=production-${CIRCLE_SHA1}"
