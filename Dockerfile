@@ -15,6 +15,6 @@ RUN pip install -r requirements.txt
 COPY ic2datadog.py .
 COPY configuration.json .
 
-RUN jq ". + { \"tags\": [\"instaclustr.environment:${ENVIRONMENT}\"] }" configuration.json
+RUN jq ". + { \"tags\": [\"environment:${ENVIRONMENT}\"] }" configuration.json
 
 CMD ["/init", "/opt/instaclustr-metrics-forwarder/ic2datadog.py"]
