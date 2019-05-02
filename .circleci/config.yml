@@ -23,13 +23,13 @@ workflows:
           name: build-staging
           <<: *build-defaults
           tag: "staging-${CIRCLE_SHA1}"
-          extra-build-args: ENVIRONMENT=staging
+          extra-build-args: "--build-arg ENVIRONMENT=staging"
 
       - aws-ecr/build_and_push_image:
           name: build-production
           <<: *build-defaults
           tag: "production-${CIRCLE_SHA1}"
-          extra-build-args: ENVIRONMENT=production
+          extra-build-args: "--build-arg ENVIRONMENT=production"
 
       - aws-ecs/deploy-service-update:
           name: deploy-staging
