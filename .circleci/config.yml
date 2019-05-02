@@ -1,35 +1,48 @@
 version: 2.1
+
 orbs:
   aws-ecr: circleci/aws-ecr@4.0.1
   aws-ecs: circleci/aws-ecs@0.0.8
+
+build-defaults: &build-defaults
+  context: aws-global
+  account-url: AWS_ECR_ACCOUNT_URL
+  aws-access-key-id: AWS_ACCESS_KEY_ID
+  aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+  create-repo: true
+  dockerfile: Dockerfile
+  repo: ${AWS_RESOURCE_NAME_PREFIX}
+  filters:
+    branches:
+      only: master
 
 workflows:
   build-and-deploy:
     jobs:
       - aws-ecr/build_and_push_image:
-          context: aws-global
-          account-url: AWS_ECR_ACCOUNT_URL
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          create-repo: true
-          dockerfile: Dockerfile
-          repo: instaclustr-metrics-forwarder
-          tag: "${CIRCLE_SHA1}"
-          filters:
-            branches:
-              only: master
+          name: build-staging
+          <<: *build-defaults
+          tag: "staging-${CIRCLE_SHA1}"
+          extra-build-args: ENVIRONMENT=staging
+
+      - aws-ecr/build_and_push_image:
+          name: build-production
+          <<: *build-defaults
+          tag: "production-${CIRCLE_SHA1}"
+          extra-build-args: ENVIRONMENT=production
 
       - aws-ecs/deploy-service-update:
           name: deploy-staging
           context: aws-global
           requires:
-            - aws-ecr/build_and_push_image
+            - build-staging
           cluster-name: "${AWS_RESOURCE_NAME_PREFIX}"
           family: "${AWS_RESOURCE_NAME_PREFIX}-staging"
 
       - promote-to-production:
           type: approval
           requires:
+            - build-production
             - deploy-staging
 
       - aws-ecs/deploy-service-update:
